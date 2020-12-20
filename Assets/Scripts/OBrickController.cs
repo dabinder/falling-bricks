@@ -1,7 +1,7 @@
 ﻿using UnityEngine.InputSystem;
 
-namespace Bricks.Controllers {
-	class OBrickController : BrickController {
+namespace Bricks {
+	public class OBrickController : BrickController {
 		/// <summary>
 		/// O-bricks cannot be rotated so ignore input
 		/// </summary>
