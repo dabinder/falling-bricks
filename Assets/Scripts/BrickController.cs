@@ -5,6 +5,19 @@ namespace Bricks {
 	public class BrickController : MonoBehaviour {
 		[SerializeField] private Vector3 rotationPoint;
 
+		private float _previousDrop;
+		private float _dropTime = 1f;
+
+		/// <summary>
+		/// automatically drop piece over time
+		/// </summary>
+		private void Update() {
+			if (Time.time - _previousDrop > _dropTime) {
+				DropPiece();
+				_previousDrop = Time.time;
+			}
+		}
+
 		/// <summary>
 		/// move active piece left or right
 		/// </summary>
@@ -30,7 +43,7 @@ namespace Bricks {
 		/// rotate piece
 		/// </summary>
 		/// <param name="_">up key press</param>
-		protected void OnRotate(InputValue _) {
+		protected virtual void OnRotate(InputValue _) {
 			if (enabled) {
 				Vector3 point = transform.TransformPoint(rotationPoint),
 					axis = new Vector3(0, 0, 1);
@@ -40,14 +53,24 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// drop piece by one row
+		/// handle down key input - drop piece by a row
 		/// </summary>
 		/// <param name="_">down key press</param>
 		private void OnDrop(InputValue _) {
 			if (enabled) {
-				Vector3 move = new Vector3(0, -1, 0);
-				transform.position += move;
-				if (!IsValidMove()) transform.position -= move;
+				DropPiece();
+			}
+		}
+
+		/// <summary>
+		/// drop piece by one row
+		/// </summary>
+		private void DropPiece() {
+			Vector3 move = new Vector3(0, -1, 0);
+			transform.position += move;
+			if (!IsValidMove()) {
+				transform.position -= move;
+				enabled = false;
 			}
 		}
 
