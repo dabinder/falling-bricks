@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Bricks {
@@ -7,6 +8,12 @@ namespace Bricks {
 
 		private float _previousDrop;
 		private float _dropTime = 1f;
+
+		/// <summary>
+		/// event to fire when a brick comes to rest after falling
+		/// </summary>
+		internal delegate void RestAction();
+		internal static event RestAction OnRest;
 
 		/// <summary>
 		/// automatically drop piece over time
@@ -35,7 +42,6 @@ namespace Bricks {
 				}
 				transform.position += move;
 				if (!IsValidMove()) transform.position -= move;
-				
 			}
 		}
 
@@ -71,6 +77,7 @@ namespace Bricks {
 			if (!IsValidMove()) {
 				transform.position -= move;
 				enabled = false;
+				OnRest?.Invoke();
 			}
 		}
 
