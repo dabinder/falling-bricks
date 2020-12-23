@@ -1,6 +1,9 @@
 using UnityEngine;
 
 namespace Bricks {
+	/// <summary>
+	/// game object to spawn new bricks at top of field
+	/// </summary>
 	public class BrickSpawner : MonoBehaviour {
 		[SerializeField] private GameObject[] _bricks;
 
@@ -8,7 +11,7 @@ namespace Bricks {
 		/// spawn a brick to start the game and subscribe to rest event to spawn new bricks
 		/// </summary>
 		private void Start() {
-			BrickController.NotifyRest += (sender) => SpawnBrick();
+			BrickController.NotifyRest += (_) => SpawnBrick();
 			SpawnBrick();
 		}
 

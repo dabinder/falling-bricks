@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Bricks {
+	/// <summary>
+	/// controller to manage brick movement on playing field
+	/// </summary>
 	public class BrickController : MonoBehaviour {
 		[SerializeField] private Vector3 rotationPoint;
 
