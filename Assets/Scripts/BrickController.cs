@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 namespace Bricks {
@@ -12,8 +11,8 @@ namespace Bricks {
 		/// <summary>
 		/// event to fire when a brick comes to rest after falling
 		/// </summary>
-		internal delegate void RestAction();
-		internal static event RestAction OnRest;
+		internal delegate void RestAction(Transform sender);
+		internal static event RestAction NotifyRest;
 
 		/// <summary>
 		/// automatically drop piece over time
@@ -77,7 +76,7 @@ namespace Bricks {
 			if (!IsValidMove()) {
 				transform.position -= move;
 				enabled = false;
-				OnRest?.Invoke();
+				NotifyRest?.Invoke(transform);
 			}
 		}
 
@@ -87,7 +86,10 @@ namespace Bricks {
 		/// <returns>new location is a valid move</returns>
 		private bool IsValidMove() {
 			foreach (Transform block in transform) {
-				if (!Playfield.IsInsideField(block.position)) {
+				Vector2 position = block.position;
+				if (!Playfield.IsInsideField(position) ||
+					Playfield.IsOccupied(position)
+				) {
 					return false;
 				}
 			}

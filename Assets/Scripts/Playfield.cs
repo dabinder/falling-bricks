@@ -1,22 +1,18 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Bricks {
-	internal static class Playfield {
-		internal const int WIDTH = 10, HEIGHT = 20;
+	public static class Playfield {
+		private const int WIDTH = 10, HEIGHT = 20;
 
 		/// <summary>
 		/// game grid
 		/// </summary>
-		internal static Transform[,] grid { get; } = new Transform[WIDTH, HEIGHT];
+		private static Transform[,] _grid = new Transform[WIDTH, HEIGHT];
 
 		/// <summary>
-		/// helper method to ensure vector value is int (may be off due to rotation)
+		/// subscribe to rest event to add brick to grid
 		/// </summary>
-		/// <param name="vector">input vector to round</param>
-		/// <returns>vector rounded as (int, int)</returns>
-		internal static Vector2 RoundVectorToInt(Vector2 vector) {
-			return new Vector2(Mathf.Round(vector.x), Mathf.Round(vector.y));
-		}
+		static Playfield() => BrickController.NotifyRest += AddToGrid;
 
 		/// <summary>
 		/// check whether given vector is inside the playable area
@@ -24,10 +20,32 @@ namespace Bricks {
 		/// <param name="position">vector to verify</param>
 		/// <returns>vector is inside the playable area</returns>
 		internal static bool IsInsideField(Vector2 position) {
-			var rounded = RoundVectorToInt(position);
+			Vector2Int rounded = position.ToVector2Int();
 			return rounded.x >= 0 &&
 				rounded.x < WIDTH &&
 				rounded.y >= 0;
+		}
+
+		/// <summary>
+		/// check if the specified grid position is occupied by a block
+		/// </summary>
+		/// <param name="position">vector to lookup</param>
+		/// <returns></returns>
+		internal static bool IsOccupied(Vector2 position) {
+			Vector2Int rounded = position.ToVector2Int();
+			return _grid[rounded.x, rounded.y] != null;
+		}
+
+		/// <summary>
+		/// record final position of brick in game grid
+		/// </summary>
+		/// <param name="brick">brick to store in grid</param>
+		private static void AddToGrid(Transform brick) {
+			foreach (Transform block in brick) {
+				Vector2Int rounded = block.position.ToVector2Int();
+				Debug.Log(rounded.ToString());
+				_grid[rounded.x, rounded.y] = block;
+			}
 		}
 	}
 }
