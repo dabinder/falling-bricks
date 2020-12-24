@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Bricks {
 	/// <summary>
@@ -112,9 +113,25 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="y">row to clear</param>
 		private void ClearLine(int y) {
+			var bricks = new Dictionary<GameObject, int>();
 			for (int x = 0; x < WIDTH; x++) {
-				Destroy(_grid[x, y].gameObject);
+				GameObject block = _grid[x, y].gameObject,
+					brick = block.transform.parent.gameObject;
+				Destroy(block);
 				_grid[x, y] = null;
+
+				if (bricks.ContainsKey(brick)) {
+					bricks[brick]++;
+				} else {
+					bricks[brick] = 1;
+				}
+			}
+
+			//destroy any empty bricks
+			foreach (GameObject brick in bricks.Keys) {
+				if (brick.transform.childCount - bricks[brick] <= 0) {
+					Destroy(brick);
+				}
 			}
 		}
 
