@@ -90,9 +90,11 @@ namespace Bricks {
 		/// <returns>number of cleared lines</returns>
 		private int ClearLines() {
 			int lines = 0;
+			var bricks = new Dictionary<GameObject, int>();
+
 			for (int y = 0; y < HEIGHT; y++) {
 				if (IsLine(y)) {
-					ClearLine(y);
+					ClearLine(y, ref bricks);
 					lines++;
 
 					//in the miraculous event the top row is cleared, this is an edge case
@@ -104,6 +106,14 @@ namespace Bricks {
 					y--;
 				}
 			}
+
+			//destroy any empty bricks
+			foreach (GameObject brick in bricks.Keys) {
+				if (brick.transform.childCount - bricks[brick] <= 0) {
+					Destroy(brick);
+				}
+			}
+
 			return lines;
 		}
 
@@ -126,8 +136,7 @@ namespace Bricks {
 		/// delete all blocks in specified row
 		/// </summary>
 		/// <param name="y">row to clear</param>
-		private void ClearLine(int y) {
-			var bricks = new Dictionary<GameObject, int>();
+		private void ClearLine(int y, ref Dictionary<GameObject, int> bricks) {
 			for (int x = 0; x < WIDTH; x++) {
 				GameObject block = _grid[x, y].gameObject,
 					brick = block.transform.parent.gameObject;
@@ -138,13 +147,6 @@ namespace Bricks {
 					bricks[brick]++;
 				} else {
 					bricks[brick] = 1;
-				}
-			}
-
-			//destroy any empty bricks
-			foreach (GameObject brick in bricks.Keys) {
-				if (brick.transform.childCount - bricks[brick] <= 0) {
-					Destroy(brick);
 				}
 			}
 		}
