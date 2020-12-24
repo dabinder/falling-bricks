@@ -12,6 +12,7 @@ namespace Bricks {
 		[SerializeField] private GameObject brickSpawnerObject;
 
 		[SerializeField] private UnityEvent OnFieldFull;
+		[SerializeField] private UnityEvent<GameObject> OnSpawn;
 		[SerializeField] private UnityEvent<int> OnClearLines;
 		
 		private readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
@@ -24,6 +25,14 @@ namespace Bricks {
 			BrickController.NotifyRest += HandleRest;
 			_brickSpawner = brickSpawnerObject.GetComponent<BrickSpawner>();
 			_brickSpawner.SpawnBrick(this);
+			OnSpawn.Invoke(_brickSpawner.Next);
+		}
+
+		/// <summary>
+		/// avoid errant event calls after this playfield's corresponding game object is destroyed
+		/// </summary>
+		private void OnDestroy() {
+			BrickController.NotifyRest -= HandleRest;
 		}
 
 		/// <summary>
@@ -61,6 +70,7 @@ namespace Bricks {
 			if (AddToGrid(brick)) {
 				OnClearLines.Invoke(ClearLines());
 				_brickSpawner.SpawnBrick(this);
+				OnSpawn.Invoke(_brickSpawner.Next);
 			} else {
 				OnFieldFull?.Invoke();
 			}

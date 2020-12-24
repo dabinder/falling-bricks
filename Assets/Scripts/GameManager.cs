@@ -4,9 +4,13 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Bricks {
+	/// <summary>
+	/// runs the game, maintains player score, directs the brick spawner
+	/// </summary>
 	public class GameManager : MonoBehaviour {
-		[SerializeField] TextMeshProUGUI scoreText;
-		[SerializeField] GameObject suspendPanel, losePanel, pausePanel;
+		[SerializeField] private TextMeshProUGUI scoreText;
+		[SerializeField] private GameObject nextBrick;
+		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
 		private bool _gameOver;
 		private int _score;
@@ -65,6 +69,26 @@ namespace Bricks {
 		public void UpdateScore(int lines) {
 			_score += 10 * Mathf.RoundToInt(Mathf.Pow(2, lines - 1));
 			scoreText.text = _score.ToString();
+		}
+
+		/// <summary>
+		/// display the next brick scheduled to be spawned
+		/// </summary>
+		/// <param name="brick">next brick</param>
+		public void UpdateNext(GameObject brick) {
+			//clear previous entry
+			Transform transform = nextBrick.transform;
+			for (int i = 0; i < transform.childCount; i++) {
+				Destroy(transform.GetChild(i).gameObject);
+			}
+
+			//add next
+			Vector3 nextPosition = transform.position;
+			GameObject brickObject = Instantiate(brick, Vector3.zero, Quaternion.identity);
+			BrickController controller = brickObject.GetComponent<BrickController>();
+			brickObject.transform.parent = transform;
+			Vector3 rotationPoint = controller.RotationPoint;
+			brickObject.transform.position = nextPosition - rotationPoint;
 		}
 	}
 }

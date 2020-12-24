@@ -9,8 +9,6 @@ namespace Bricks {
 		/// O-bricks cannot be rotated so ignore input
 		/// </summary>
 		/// <param name="_">up key press</param>
-		protected override void OnRotate(InputValue _) {
-			return;
-		}
+		protected override void OnRotate(InputValue _) { }
 	}
 }

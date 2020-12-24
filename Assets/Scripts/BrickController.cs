@@ -7,7 +7,10 @@ namespace Bricks {
 	/// </summary>
 	public class BrickController : MonoBehaviour {
 		[SerializeField] private Vector3 rotationPoint;
-
+		public Vector3 RotationPoint {
+			get => rotationPoint;
+		}
+		
 		internal Playfield Playfield { get; set; }
 
 		private float _previousDrop;
