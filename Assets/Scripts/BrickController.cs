@@ -8,6 +8,8 @@ namespace Bricks {
 	public class BrickController : MonoBehaviour {
 		[SerializeField] private Vector3 rotationPoint;
 
+		internal Playfield Playfield { get; set; }
+
 		private float _previousDrop;
 		private float _dropTime = 1f;
 
@@ -71,15 +73,27 @@ namespace Bricks {
 		}
 
 		/// <summary>
+		/// immediately drop piece to bottom of playing field
+		/// </summary>
+		/// <param name="_">spacebar press</param>
+		private void OnHardDrop(InputValue _) {
+			while (enabled && IsValidMove()) {
+				DropPiece();
+			}
+		}
+
+		/// <summary>
 		/// drop piece by one row
 		/// </summary>
 		private void DropPiece() {
-			Vector3 move = new Vector3(0, -1, 0);
-			transform.position += move;
-			if (!IsValidMove()) {
-				transform.position -= move;
-				enabled = false;
-				NotifyRest?.Invoke(transform);
+			if (enabled) {
+				Vector3 move = new Vector3(0, -1, 0);
+				transform.position += move;
+				if (!IsValidMove()) {
+					transform.position -= move;
+					enabled = false;
+					NotifyRest?.Invoke(transform);
+				}
 			}
 		}
 
@@ -96,7 +110,6 @@ namespace Bricks {
 					return false;
 				}
 			}
-
 			return true;
 		}
 	}

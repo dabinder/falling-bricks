@@ -5,20 +5,15 @@ namespace Bricks {
 	/// game object to spawn new bricks at top of field
 	/// </summary>
 	public class BrickSpawner : MonoBehaviour {
-		[SerializeField] private GameObject[] _bricks;
-
-		/// <summary>
-		/// spawn a brick to start the game and subscribe to rest event to spawn new bricks
-		/// </summary>
-		private void Start() {
-			BrickController.NotifyRest += (_) => SpawnBrick();
-			SpawnBrick();
-		}
+		[SerializeField] private GameObject[] bricks;
 
 		/// <summary>
 		/// create a new brick at the spawn point
 		/// </summary>
-		private void SpawnBrick() =>
-			Instantiate(_bricks[Random.Range(0, _bricks.Length)], transform.position, Quaternion.identity);
+		public void SpawnBrick(Playfield playfield) {
+			BrickController controller = Instantiate(bricks[Random.Range(0, bricks.Length)], transform.position, Quaternion.identity)
+				.GetComponent<BrickController>();
+			controller.Playfield = playfield;
+		}
 	}
 }

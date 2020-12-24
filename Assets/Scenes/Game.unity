@@ -363,7 +363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac71421b78f85da4781ec4df481d7f3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _bricks:
+  bricks:
   - {fileID: 2733644969229865950, guid: 32e1ccd6164f84043bef69a975cc701a, type: 3}
   - {fileID: 7153350443722791378, guid: 445237ff3e1e25a4a91eb5c03ad363e8, type: 3}
   - {fileID: 8927653940697420456, guid: 6ec30ff8634fb8642ab87f869e903aba, type: 3}
@@ -453,3 +453,47 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1526140851
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1526140852}
+  - component: {fileID: 1526140853}
+  m_Layer: 0
+  m_Name: Playfield
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1526140852
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526140851}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.4902861, y: 9.131509, z: -0.58718556}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1526140853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1526140851}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bce4020b73469345a12ec689442cf34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  brickSpawnerObject: {fileID: 1272757008}
