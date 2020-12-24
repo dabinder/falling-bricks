@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Bricks {
 	/// <summary>
@@ -10,8 +11,11 @@ namespace Bricks {
 
 		[SerializeField] private GameObject brickSpawnerObject;
 
+		[SerializeField] private UnityEvent OnFieldFull;
+		
 		private readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
 		private BrickSpawner _brickSpawner;
+
 
 		/// <summary>
 		/// subscribe to rest event to add brick to grid
@@ -54,20 +58,30 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
 		private void HandleRest(Transform brick) {
-			AddToGrid(brick);
-			int lines = ClearLines();
-			_brickSpawner.SpawnBrick(this);
+			if (AddToGrid(brick)) {
+				int lines = ClearLines();
+				_brickSpawner.SpawnBrick(this);
+			} else {
+				OnFieldFull?.Invoke();
+			}
 		}
 
 		/// <summary>
-		/// record final position of brick in game grid
+		/// record final position of brick in game grid if in valid position
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
-		private void AddToGrid(Transform brick) {
+		/// <returns>brick was in a valid position and added to the grid</returns>
+		private bool AddToGrid(Transform brick) {
 			foreach (Transform block in brick) {
 				Vector2Int rounded = block.position.ToVector2Int();
+				if (rounded.y >= HEIGHT) {
+					//brick couldn't fully enter the playing field
+					return false;
+				}
 				_grid[rounded.x, rounded.y] = block;
 			}
+
+			return true;
 		}
 
 		/// <summary>
