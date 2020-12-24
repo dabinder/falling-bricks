@@ -12,10 +12,10 @@ namespace Bricks {
 		[SerializeField] private GameObject brickSpawnerObject;
 
 		[SerializeField] private UnityEvent OnFieldFull;
+		[SerializeField] private UnityEvent<int> OnClearLines;
 		
 		private readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
 		private BrickSpawner _brickSpawner;
-
 
 		/// <summary>
 		/// subscribe to rest event to add brick to grid
@@ -59,7 +59,7 @@ namespace Bricks {
 		/// <param name="brick">brick to store in grid</param>
 		private void HandleRest(Transform brick) {
 			if (AddToGrid(brick)) {
-				int lines = ClearLines();
+				OnClearLines.Invoke(ClearLines());
 				_brickSpawner.SpawnBrick(this);
 			} else {
 				OnFieldFull?.Invoke();

@@ -1,14 +1,15 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Bricks {
 	public class GameManager : MonoBehaviour {
-		[SerializeField] GameObject playfieldObject;
+		[SerializeField] TextMeshProUGUI scoreText;
 		[SerializeField] GameObject suspendPanel, losePanel, pausePanel;
 
-		private Playfield _playfield;
 		private bool _gameOver;
+		private int _score;
 
 		private bool _isPaused;
 		private bool IsPaused {
@@ -24,7 +25,6 @@ namespace Bricks {
 		/// grab reference to playing field
 		/// </summary>
 		private void Start() {
-			_playfield = playfieldObject.GetComponent<Playfield>();
 			Time.timeScale = 1;
 		}
 
@@ -56,6 +56,15 @@ namespace Bricks {
 			if (IsPaused) {
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			}
+		}
+
+		/// <summary>
+		/// keep track of player score and update on screen
+		/// </summary>
+		/// <param name="lines">number of lines cleared</param>
+		public void UpdateScore(int lines) {
+			_score += 10 * Mathf.RoundToInt(Mathf.Pow(2, lines - 1));
+			scoreText.text = _score.ToString();
 		}
 	}
 }
