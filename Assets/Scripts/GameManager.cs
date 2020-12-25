@@ -8,12 +8,12 @@ namespace Bricks {
 	/// runs the game, maintains player score, directs the brick spawner
 	/// </summary>
 	public class GameManager : MonoBehaviour {
-		[SerializeField] private TextMeshProUGUI scoreText;
+		[SerializeField] private TextMeshProUGUI scoreText, linesText;
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
 		private bool _gameOver;
-		private int _score;
+		private int _score, _lines;
 
 		private bool _isPaused;
 		private bool IsPaused {
@@ -67,8 +67,11 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="lines">number of lines cleared</param>
 		public void UpdateScore(int lines) {
-			_score += 10 * Mathf.RoundToInt(Mathf.Pow(2, lines - 1));
+			_score += 10 * Mathf.RoundToInt(Mathf.Pow(3, lines - 1));
 			scoreText.text = _score.ToString();
+
+			_lines += lines;
+			linesText.text = _lines.ToString();
 		}
 
 		/// <summary>
