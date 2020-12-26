@@ -13,7 +13,7 @@ namespace Bricks {
 			MAX_LINES = 10;
 		private const float LEVEL_BONUS = .5f;
 
-		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText;
+		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText, finalScoreText;
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
@@ -62,6 +62,7 @@ namespace Bricks {
 			IsPaused = true;
 			losePanel.SetActive(true);
 			_gameOver = true;
+			finalScoreText.text = $"Final Score: {_score}";
 		}
 
 		/// <summary>
@@ -70,9 +71,8 @@ namespace Bricks {
 		/// <param name="_">pause button press</param>
 		private void OnPause(InputValue _) {
 			if (_gameOver) return;
-			bool paused = !IsPaused;
-			IsPaused = paused;
-			pausePanel.SetActive(paused);
+			IsPaused = !IsPaused;
+			pausePanel.SetActive(IsPaused);
 		}
 
 		/// <summary>
