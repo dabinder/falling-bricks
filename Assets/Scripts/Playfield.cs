@@ -21,7 +21,7 @@ namespace Bricks {
 		/// <summary>
 		/// subscribe to rest event to add brick to grid
 		/// </summary>
-		private void Start() {
+		private void OnEnable() {
 			BrickController.NotifyRest += HandleRest;
 			_brickSpawner = brickSpawnerObject.GetComponent<BrickSpawner>();
 			_brickSpawner.SpawnBrick(this);
@@ -29,9 +29,9 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// avoid errant event calls after this playfield's corresponding game object is destroyed
+		/// avoid errant event calls after this playfield's corresponding game object is disabled or destroyed
 		/// </summary>
-		private void OnDestroy() {
+		private void OnDisable() {
 			BrickController.NotifyRest -= HandleRest;
 		}
 
@@ -68,7 +68,10 @@ namespace Bricks {
 		/// <param name="brick">brick to store in grid</param>
 		private void HandleRest(Transform brick) {
 			if (AddToGrid(brick)) {
-				OnClearLines.Invoke(ClearLines());
+				int lines = ClearLines();
+				if (lines > 0) {
+					OnClearLines.Invoke(lines);
+				}
 				_brickSpawner.SpawnBrick(this);
 				OnSpawn.Invoke(_brickSpawner.Next);
 			} else {

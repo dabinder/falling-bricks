@@ -8,11 +8,30 @@ namespace Bricks {
 	/// runs the game, maintains player score, directs the brick spawner
 	/// </summary>
 	public class GameManager : MonoBehaviour {
-		[SerializeField] private TextMeshProUGUI scoreText, linesText;
+		private const int LINE_SCORE = 10,
+			LINE_BASE = 3,
+			MAX_LINES = 10;
+		private const float LEVEL_BONUS = .5f;
+
+		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText;
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
+		/// <summary>
+		/// event to fire when level is increased
+		/// </summary>
+		internal delegate void LevelAction(int level);
+		internal static event LevelAction NotifyLevel;
+
 		private bool _gameOver;
+		private int _level = 1;
+		private int Level {
+			get => _level;
+			set {
+				_level = value;
+				NotifyLevel?.Invoke(value);
+			}
+		}
 		private int _score, _lines;
 
 		private bool _isPaused;
@@ -30,6 +49,10 @@ namespace Bricks {
 		/// </summary>
 		private void Start() {
 			Time.timeScale = 1;
+			scoreText.text = _score.ToString();
+			linesText.text = _lines.ToString();
+			levelText.text = Level.ToString();
+			NotifyLevel?.Invoke(Level);
 		}
 
 		/// <summary>
@@ -64,14 +87,27 @@ namespace Bricks {
 
 		/// <summary>
 		/// keep track of player score and update on screen
+		/// increase level at fixed interval of lines
 		/// </summary>
 		/// <param name="lines">number of lines cleared</param>
 		public void UpdateScore(int lines) {
-			_score += 10 * Mathf.RoundToInt(Mathf.Pow(3, lines - 1));
+			//score is SCORE * BASE^(n-1) * (1 + (level - 1) * BONUS)
+			_score += Mathf.RoundToInt(LINE_SCORE * Mathf.Pow(LINE_BASE, lines - 1)
+				* (1 + (Level - 1) * LEVEL_BONUS));
 			scoreText.text = _score.ToString();
 
+			//record total lines
+			int startingLines = _lines;
 			_lines += lines;
 			linesText.text = _lines.ToString();
+
+			//check for level up
+			int startDiv = startingLines / MAX_LINES,
+				endDiv = _lines / MAX_LINES;
+			if (endDiv > startDiv) {
+				Level += endDiv - startDiv;
+				levelText.text = Level.ToString();
+			}
 		}
 
 		/// <summary>

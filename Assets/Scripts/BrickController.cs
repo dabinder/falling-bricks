@@ -6,15 +6,35 @@ namespace Bricks {
 	/// controller to manage brick movement on playing field
 	/// </summary>
 	public class BrickController : MonoBehaviour {
+		//initial speed measured in seconds between auto-drops
+		private const float BASE_DROP_TIME = 1f;
+		//percent increase in speed each new level
+		private const float LEVEL_MULTIPLIER = .1f;
+
 		[SerializeField] private Vector3 rotationPoint;
+		/// <summary>
+		/// get the center of rotation point for the current brick
+		/// </summary>
 		public Vector3 RotationPoint {
 			get => rotationPoint;
 		}
-		
+
 		internal Playfield Playfield { get; set; }
 
+		private int _level;
+		/// <summary>
+		/// decrease the drop time by a fixed percentage for each level after the first
+		/// </summary>
+		internal int Level {
+			get => _level;
+			set {
+				_level = value;
+				_dropTime = BASE_DROP_TIME * Mathf.Pow(1 - LEVEL_MULTIPLIER, value - 1);
+			}
+		}
+
 		private float _previousDrop;
-		private float _dropTime = 1f;
+		private float _dropTime = BASE_DROP_TIME;
 
 		/// <summary>
 		/// event to fire when a brick comes to rest after falling
