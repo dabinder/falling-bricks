@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Bricks {
 	/// <summary>
@@ -16,11 +15,18 @@ namespace Bricks {
 		private int _level;
 
 		/// <summary>
-		/// queue up a brick to start the game
+		/// queue up a brick to start the game and subscribe to level changes (impacting brick speed)
 		/// </summary>
 		private void Awake() {
 			UpdateNext();
 			GameManager.NotifyLevel += UpdateLevel;
+		}
+
+		/// <summary>
+		/// unsubscribe from level changes when destroyed
+		/// </summary>
+		private void OnDestroy() {
+			GameManager.NotifyLevel -= UpdateLevel;
 		}
 
 		/// <summary>

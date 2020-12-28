@@ -36,6 +36,22 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "Confirm",
+                    "type": "Button",
+                    "id": "15daa201-ec23-49ca-8218-fd347adc885a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Pause",
+                    "type": "Button",
+                    "id": "242b747e-9d8f-4b7c-9fc8-c55bc22b8534",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -104,34 +120,10 @@
                     "action": "HardDrop",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "UI",
-            "id": "821b3b14-1465-4350-82a6-5c62b085d62d",
-            "actions": [
-                {
-                    "name": "Confirm",
-                    "type": "Button",
-                    "id": "a6c813ac-a12c-410d-9387-626e96c2bd59",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
                 },
                 {
-                    "name": "Pause",
-                    "type": "Button",
-                    "id": "e480ce18-159d-487e-b5ec-063cf0e0d88d",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                }
-            ],
-            "bindings": [
-                {
                     "name": "",
-                    "id": "c7a0fcc1-76f7-4c3e-a6e6-76e99ad6870f",
+                    "id": "239d76f9-5f23-4cf9-aacb-7c57063a1a7c",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
                     "processors": "",
@@ -142,7 +134,7 @@
                 },
                 {
                     "name": "",
-                    "id": "298ad368-05e9-4ee8-b4bc-9b9de0eb991c",
+                    "id": "707832fa-005f-43f8-bab6-775d34c4920f",
                     "path": "<Keyboard>/numpadEnter",
                     "interactions": "",
                     "processors": "",
@@ -153,7 +145,7 @@
                 },
                 {
                     "name": "",
-                    "id": "34abcbda-ae01-45fa-bfaa-dde593154fb3",
+                    "id": "c17cdd47-1aa3-4f86-a8ef-c28b4f1d3c93",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",

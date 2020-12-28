@@ -2705,7 +2705,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1932419538}
   - component: {fileID: 1932419537}
-  - component: {fileID: 1932419539}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -2729,6 +2728,7 @@ MonoBehaviour:
   linesText: {fileID: 1913069989}
   levelText: {fileID: 871526529}
   finalScoreText: {fileID: 280566424}
+  inputHandler: {fileID: 841144538}
   nextBrick: {fileID: 377604291}
   suspendPanel: {fileID: 977302798}
   losePanel: {fileID: 267244744}
@@ -2747,56 +2747,6 @@ Transform:
   m_Father: {fileID: 1084079772}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1932419539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1932419536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 62b2b3785234e204e95a2faf7b6cd6b4, type: 3}
-  m_NotificationBehavior: 0
-  m_UIInputModule: {fileID: 0}
-  m_DeviceLostEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_DeviceRegainedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ControlsChangedEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  m_ActionEvents:
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 5112e1e4-54d2-4b82-83cf-04abf995662d
-    m_ActionName: Piece/Move[/Keyboard/leftArrow,/Keyboard/rightArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 1b33b4ea-b774-46ea-90bb-6ba3467324fa
-    m_ActionName: Piece/Rotate[/Keyboard/upArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: eae6d47a-2afe-4194-8353-6dd879a72c78
-    m_ActionName: Piece/Drop[/Keyboard/downArrow]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: 0da570da-a987-44e3-b5cd-c32bb6692a36
-    m_ActionName: Piece/HardDrop[/Keyboard/space]
-  - m_PersistentCalls:
-      m_Calls: []
-    m_ActionId: a6c813ac-a12c-410d-9387-626e96c2bd59
-    m_ActionName: UI/Confirm[/Keyboard/enter]
-  m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: UI
-  m_SplitScreenIndex: -1
-  m_Camera: {fileID: 0}
 --- !u!1 &2091746909
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,16 +9,18 @@ namespace Bricks {
 	/// </summary>
 	public class GameManager : MonoBehaviour {
 		private const int LINE_SCORE = 10,
-			LINE_BASE = 3,
+			MULTI_LINE_BASE = 3,
 			MAX_LINES = 10;
 		private const float LEVEL_BONUS = .5f;
 
 		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText, finalScoreText;
+		[SerializeField] private GameObject inputHandler;
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
 		private bool _gameOver;
 		private int _score, _lines;
+		private PlayerInputHandler _playerInputHandler;
 		
 		/// <summary>
 		/// event to fire when level is increased
@@ -26,13 +28,6 @@ namespace Bricks {
 		/// <param name="level">new game level</param>
 		internal delegate void LevelAction(int level);
 		internal static event LevelAction NotifyLevel;
-
-		/// <summary>
-		/// event to fire when game is paused or unpaused
-		/// </summary>
-		/// <param name="suspended">true if game is paused, false if unpaused</param>
-		internal delegate void SuspendAction(bool suspended);
-		internal static event SuspendAction NotifySuspend;
 
 		private int _level = 1;
 		/// <summary>
@@ -56,7 +51,7 @@ namespace Bricks {
 				_isSuspended = value;
 				suspendPanel.SetActive(value);
 				Time.timeScale = value ? 0 : 1;
-				NotifySuspend?.Invoke(value);
+				_playerInputHandler.CanControlBrick = !value;
 			}
 		}
 
@@ -65,10 +60,27 @@ namespace Bricks {
 		/// </summary>
 		private void Start() {
 			Time.timeScale = 1;
+			_playerInputHandler = inputHandler.GetComponent<PlayerInputHandler>();
 			scoreText.text = _score.ToString();
 			linesText.text = _lines.ToString();
 			levelText.text = Level.ToString();
 			NotifyLevel?.Invoke(Level);
+		}
+
+		/// <summary>
+		/// subscribe to input events
+		/// </summary>
+		private void OnEnable() {
+			PlayerInputHandler.NotifyPause += Pause;
+			PlayerInputHandler.NotifyConfirm += Confirm;
+		}
+
+		/// <summary>
+		/// unsubscribe from input events
+		/// </summary>
+		private void OnDisable() {
+			PlayerInputHandler.NotifyPause -= Pause;
+			PlayerInputHandler.NotifyConfirm -= Confirm;
 		}
 
 		/// <summary>
@@ -77,16 +89,14 @@ namespace Bricks {
 		private void GameOver() {
 			IsSuspended = true;
 			losePanel.SetActive(true);
-			_gameOver = true;
+			_playerInputHandler.GameActive = false;
 			finalScoreText.text = $"Final Score: {_score}";
 		}
 
 		/// <summary>
 		/// handle pause button press
 		/// </summary>
-		/// <param name="_">pause button press</param>
-		private void OnPause(InputValue _) {
-			if (_gameOver) return;
+		private void Pause() {
 			IsSuspended = !IsSuspended;
 			pausePanel.SetActive(IsSuspended);
 		}
@@ -94,8 +104,7 @@ namespace Bricks {
 		/// <summary>
 		/// confirm reset after end of game or from pause menu
 		/// </summary>
-		/// <param name="_">confirm button press</param>
-		private void OnConfirm(InputValue _) {
+		private void Confirm() {
 			if (IsSuspended) {
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			}
@@ -108,7 +117,7 @@ namespace Bricks {
 		/// <param name="lines">number of lines cleared</param>
 		public void UpdateScore(int lines) {
 			//score is SCORE * BASE^(n-1) * (1 + (level - 1) * BONUS)
-			_score += Mathf.RoundToInt(LINE_SCORE * Mathf.Pow(LINE_BASE, lines - 1)
+			_score += Mathf.RoundToInt(LINE_SCORE * Mathf.Pow(MULTI_LINE_BASE, lines - 1)
 				* (1 + (Level - 1) * LEVEL_BONUS));
 			scoreText.text = _score.ToString();
 

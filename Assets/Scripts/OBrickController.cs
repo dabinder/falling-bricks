@@ -1,6 +1,4 @@
-﻿using UnityEngine.InputSystem;
-
-namespace Bricks {
+﻿namespace Bricks {
 	/// <summary>
 	/// controller to manage non-rotatable O-bricks
 	/// </summary>

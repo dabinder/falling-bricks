@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Bricks {
 	/// <summary>
@@ -19,6 +18,9 @@ namespace Bricks {
 			get => rotationPoint;
 		}
 
+		private float _previousDrop;
+		private float _dropTime = BASE_DROP_TIME;
+
 		internal Playfield Playfield { get; set; }
 
 		private int _level;
@@ -32,9 +34,6 @@ namespace Bricks {
 				_dropTime = BASE_DROP_TIME * Mathf.Pow(1 - LEVEL_MULTIPLIER, value - 1);
 			}
 		}
-
-		private float _previousDrop;
-		private float _dropTime = BASE_DROP_TIME;
 
 		/// <summary>
 		/// event to fire when a brick comes to rest after falling
@@ -105,9 +104,9 @@ namespace Bricks {
 		/// handle down key input - drop piece by a row
 		/// </summary>
 		/// <param name="hard">
-		///		indicates a hard drop (instantly drops brick to bottom of field)
-		///		soft drop will drop brick by one row at a time
-		///	</param>
+		/// indicates a hard drop (instantly drops brick to bottom of field)
+		/// soft drop will drop brick by one row at a time
+		/// </param>
 		private void Drop(bool hard) {
 			if (enabled) {
 				if (hard) {
