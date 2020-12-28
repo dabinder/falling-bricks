@@ -42,12 +42,11 @@ namespace Bricks {
 		/// create a new brick at the spawn point
 		/// </summary>
 		public void SpawnBrick(Playfield playfield) {
-			GameObject brick = Instantiate(Next, transform.position, Quaternion.identity);
-			BrickController controller = brick.GetComponent<BrickController>();
+			BrickController controller = Instantiate(Next, transform.position, Quaternion.identity)
+				.GetComponent<BrickController>();
 			controller.Playfield = playfield;
 			controller.Level = _level;
 			controller.enabled = true;
-			brick.GetComponent<PlayerInput>().enabled = true;
 			UpdateNext();
 		}
 	}

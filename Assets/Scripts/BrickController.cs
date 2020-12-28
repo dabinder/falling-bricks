@@ -43,6 +43,24 @@ namespace Bricks {
 		internal static event RestAction NotifyRest;
 
 		/// <summary>
+		/// subscribe to input events
+		/// </summary>
+		private void OnEnable() {
+			PlayerInputHandler.NotifyMove += Move;
+			PlayerInputHandler.NotifyRotate += Rotate;
+			PlayerInputHandler.NotifyDrop += Drop;
+		}
+
+		/// <summary>
+		/// unsubscribe from input events
+		/// </summary>
+		private void OnDisable() {
+			PlayerInputHandler.NotifyMove -= Move;
+			PlayerInputHandler.NotifyRotate -= Rotate;
+			PlayerInputHandler.NotifyDrop -= Drop;
+		}
+
+		/// <summary>
 		/// automatically drop piece over time
 		/// </summary>
 		private void Update() {
@@ -55,10 +73,9 @@ namespace Bricks {
 		/// <summary>
 		/// move active piece left or right
 		/// </summary>
-		/// <param name="movementValue">negative (left) or positive (right) value</param>
-		private void OnMove(InputValue movementValue) {
+		/// <param name="direction">negative (left) or positive (right) value</param>
+		private void Move(float direction) {
 			if (enabled) {
-				var direction = movementValue.Get<float>();
 				Vector3 move;
 				if (direction > 0) { //move right
 					move = new Vector3(1, 0, 0);
@@ -75,8 +92,7 @@ namespace Bricks {
 		/// <summary>
 		/// rotate piece
 		/// </summary>
-		/// <param name="_">up key press</param>
-		protected virtual void OnRotate(InputValue _) {
+		protected virtual void Rotate() {
 			if (enabled) {
 				Vector3 point = transform.TransformPoint(rotationPoint),
 					axis = new Vector3(0, 0, 1);
@@ -88,20 +104,19 @@ namespace Bricks {
 		/// <summary>
 		/// handle down key input - drop piece by a row
 		/// </summary>
-		/// <param name="_">down key press</param>
-		private void OnDrop(InputValue _) {
+		/// <param name="hard">
+		///		indicates a hard drop (instantly drops brick to bottom of field)
+		///		soft drop will drop brick by one row at a time
+		///	</param>
+		private void Drop(bool hard) {
 			if (enabled) {
-				DropPiece();
-			}
-		}
-
-		/// <summary>
-		/// immediately drop piece to bottom of playing field
-		/// </summary>
-		/// <param name="_">spacebar press</param>
-		private void OnHardDrop(InputValue _) {
-			while (enabled && IsValidMove()) {
-				DropPiece();
+				if (hard) {
+					while (enabled && IsValidMove()) {
+						DropPiece();
+					}
+				} else {
+					DropPiece();
+				}
 			}
 		}
 

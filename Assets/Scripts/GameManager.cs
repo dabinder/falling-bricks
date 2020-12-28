@@ -17,14 +17,27 @@ namespace Bricks {
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
 
+		private bool _gameOver;
+		private int _score, _lines;
+		
 		/// <summary>
 		/// event to fire when level is increased
 		/// </summary>
+		/// <param name="level">new game level</param>
 		internal delegate void LevelAction(int level);
 		internal static event LevelAction NotifyLevel;
 
-		private bool _gameOver;
+		/// <summary>
+		/// event to fire when game is paused or unpaused
+		/// </summary>
+		/// <param name="suspended">true if game is paused, false if unpaused</param>
+		internal delegate void SuspendAction(bool suspended);
+		internal static event SuspendAction NotifySuspend;
+
 		private int _level = 1;
+		/// <summary>
+		/// current game level
+		/// </summary>
 		private int Level {
 			get => _level;
 			set {
@@ -32,15 +45,18 @@ namespace Bricks {
 				NotifyLevel?.Invoke(value);
 			}
 		}
-		private int _score, _lines;
 
-		private bool _isPaused;
-		private bool IsPaused {
-			get => _isPaused;
+		private bool _isSuspended;
+		/// <summary>
+		/// game action is suspended (paused or game over)
+		/// </summary>
+		private bool IsSuspended {
+			get => _isSuspended;
 			set {
-				_isPaused = value;
+				_isSuspended = value;
 				suspendPanel.SetActive(value);
 				Time.timeScale = value ? 0 : 1;
+				NotifySuspend?.Invoke(value);
 			}
 		}
 
@@ -59,7 +75,7 @@ namespace Bricks {
 		/// end game with a game over notification
 		/// </summary>
 		private void GameOver() {
-			IsPaused = true;
+			IsSuspended = true;
 			losePanel.SetActive(true);
 			_gameOver = true;
 			finalScoreText.text = $"Final Score: {_score}";
@@ -71,8 +87,8 @@ namespace Bricks {
 		/// <param name="_">pause button press</param>
 		private void OnPause(InputValue _) {
 			if (_gameOver) return;
-			IsPaused = !IsPaused;
-			pausePanel.SetActive(IsPaused);
+			IsSuspended = !IsSuspended;
+			pausePanel.SetActive(IsSuspended);
 		}
 
 		/// <summary>
@@ -80,7 +96,7 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="_">confirm button press</param>
 		private void OnConfirm(InputValue _) {
-			if (IsPaused) {
+			if (IsSuspended) {
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			}
 		}
