@@ -10,6 +10,8 @@ namespace Bricks {
 		//percent increase in speed each new level
 		private const float LEVEL_MULTIPLIER = .1f;
 
+		private const float MOVE_TIME_INTERVAL = .1f;
+
 		[SerializeField] private Vector3 rotationPoint;
 		/// <summary>
 		/// get the center of rotation point for the current brick
@@ -18,9 +20,14 @@ namespace Bricks {
 			get => rotationPoint;
 		}
 
-		private float _previousDrop;
+		private float _previousDrop, _previousMove;
 		private float _dropTime = BASE_DROP_TIME;
+		private Vector3 _moveDirection;
+		private bool _isDropping;
 
+		/// <summary>
+		/// playfield where this brick is loaded
+		/// </summary>
 		internal Playfield Playfield { get; set; }
 
 		private int _level;
@@ -48,6 +55,7 @@ namespace Bricks {
 			PlayerInputHandler.NotifyMove += Move;
 			PlayerInputHandler.NotifyRotate += Rotate;
 			PlayerInputHandler.NotifyDrop += Drop;
+			PlayerInputHandler.NotifyHardDrop += HardDrop;
 		}
 
 		/// <summary>
@@ -57,13 +65,24 @@ namespace Bricks {
 			PlayerInputHandler.NotifyMove -= Move;
 			PlayerInputHandler.NotifyRotate -= Rotate;
 			PlayerInputHandler.NotifyDrop -= Drop;
+			PlayerInputHandler.NotifyHardDrop -= HardDrop;
 		}
 
 		/// <summary>
-		/// automatically drop piece over time
+		/// handle piece moves and drops, plus auto-drop piece over time
 		/// </summary>
 		private void Update() {
-			if (Time.time - _previousDrop > _dropTime) {
+			//continually move piece while button is pressed
+			if (_moveDirection != Vector3.zero && Time.time - _previousMove > MOVE_TIME_INTERVAL) {
+				transform.position += _moveDirection;
+				if (!IsValidMove()) transform.position -= _moveDirection;
+				_previousMove = Time.time;
+			}
+
+			//continually drop piece while button is pressed; otherwise drop on fixed time interval
+			if ((_isDropping && Time.time - _previousDrop > MOVE_TIME_INTERVAL) ||
+				(!_isDropping && Time.time - _previousDrop > _dropTime)
+			) {
 				DropPiece();
 				_previousDrop = Time.time;
 			}
@@ -75,16 +94,20 @@ namespace Bricks {
 		/// <param name="direction">negative (left) or positive (right) value</param>
 		private void Move(float direction) {
 			if (enabled) {
-				Vector3 move;
 				if (direction > 0) { //move right
-					move = new Vector3(1, 0, 0);
+					_moveDirection = new Vector3(1, 0, 0);
 				} else if (direction < 0) { //move left
-					move = new Vector3(-1, 0, 0);
-				} else {
-					return;
+					_moveDirection = new Vector3(-1, 0, 0);
+				} else { //stop moving
+					_moveDirection = new Vector3(0, 0, 0);
 				}
-				transform.position += move;
-				if (!IsValidMove()) transform.position -= move;
+
+				//perform initial move immediately
+				if (_moveDirection != Vector3.zero) {
+					transform.position += _moveDirection;
+					if (!IsValidMove()) transform.position -= _moveDirection;
+					_previousMove = Time.time;
+				}
 			}
 		}
 
@@ -101,21 +124,29 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// handle down key input - drop piece by a row
+		/// drop piece by one row at a time
 		/// </summary>
-		/// <param name="hard">
-		/// indicates a hard drop (instantly drops brick to bottom of field)
-		/// soft drop will drop brick by one row at a time
-		/// </param>
-		private void Drop(bool hard) {
+		/// <param name="start">true indicates drop action is starting; false stopping</param>
+		private void Drop(bool start) {
 			if (enabled) {
-				if (hard) {
-					while (enabled && IsValidMove()) {
-						DropPiece();
-					}
-				} else {
+				if (start) {
+					_isDropping = start;
+
+					//perform initial drop immediately
 					DropPiece();
+					_previousDrop = Time.time;
+				} else {
+					_isDropping = false;
 				}
+			}
+		}
+
+		/// <summary>
+		/// instantly drop piece to bottom of field
+		/// </summary>
+		private void HardDrop() {
+			while (enabled && IsValidMove()) {
+				DropPiece();
 			}
 		}
 

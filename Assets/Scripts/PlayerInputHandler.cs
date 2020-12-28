@@ -22,7 +22,7 @@ namespace Bricks {
 		/// <summary>
 		/// event to handle left/right movement
 		/// </summary>
-		/// <param name="direction"></param>
+		/// <param name="direction">movement direction: positive indicates right, negative left</param>
 		internal delegate void MoveAction(float direction);
 		internal static event MoveAction NotifyMove;
 
@@ -35,12 +35,15 @@ namespace Bricks {
 		/// <summary>
 		/// event to handle brick drops
 		/// </summary>
-		/// <param name="hard">
-		/// indicates a hard drop (instantly drops brick to bottom of field)
-		/// soft drop will drop brick by one row at a time
-		/// </param>
-		internal delegate void DropAction(bool hard);
+		/// <param name="start">true indicates action is starting; false stopping</param>
+		internal delegate void DropAction(bool start);
 		internal static event DropAction NotifyDrop;
+
+		/// <summary>
+		/// event to handle instant brick drop to bottom of playing field
+		/// </summary>
+		internal delegate void HardDropAction();
+		internal static event HardDropAction NotifyHardDrop;
 
 		/// <summary>
 		/// event to handle pause button press
@@ -83,39 +86,41 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="context">player input</param>
 		public void HandleInput(InputAction.CallbackContext context) {
-			if (context.action.phase == InputActionPhase.Performed) {
-				switch (Enum.Parse(typeof(InputType), context.action.name, true)) {
+			InputActionPhase phase = context.action.phase;
+			var inputType = (InputType) Enum.Parse(typeof(InputType), context.action.name, true);
+
+			if (phase == InputActionPhase.Performed) {
+				switch (inputType) {
 					//brick controls
-					case InputType.Move:
-						if (!CanControlBrick) return;
-						var direction = context.ReadValue<float>();
-						NotifyMove?.Invoke(direction);
-						break;
-
 					case InputType.Rotate:
-						if (!CanControlBrick) return;
-						NotifyRotate?.Invoke();
-						break;
-
-					case InputType.Drop:
-						if (!CanControlBrick) return;
-						NotifyDrop?.Invoke(false);
+						if (CanControlBrick) {
+							NotifyRotate?.Invoke();
+						}
 						break;
 
 					case InputType.HardDrop:
-						if (!CanControlBrick) return;
-						NotifyDrop?.Invoke(true);
+						if (CanControlBrick) {
+							NotifyHardDrop?.Invoke();
+						}
 						break;
 
 					//game controls
 					case InputType.Pause:
-						if (!GameActive) return;
-						NotifyPause?.Invoke();
+						if (GameActive) {
+							NotifyPause?.Invoke();
+						}
 						break;
 
 					case InputType.Confirm:
 						NotifyConfirm?.Invoke();
 						break;
+				}
+			} else if (phase == InputActionPhase.Started || phase == InputActionPhase.Canceled) {
+				if (inputType == InputType.Move && CanControlBrick) {
+					var direction = context.ReadValue<float>();
+					NotifyMove?.Invoke(phase == InputActionPhase.Started ? direction : 0);
+				} else if (inputType == InputType.Drop && CanControlBrick) {
+					NotifyDrop?.Invoke(phase == InputActionPhase.Started);
 				}
 			}
 		}
