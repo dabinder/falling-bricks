@@ -8,32 +8,8 @@ namespace Bricks {
 	/// </summary>
 	public class Playfield : MonoBehaviour {
 		private const int WIDTH = 10, HEIGHT = 20;
-
-		[SerializeField] private GameObject brickSpawnerObject;
-
-		[SerializeField] private UnityEvent OnFieldFull;
-		[SerializeField] private UnityEvent<GameObject> OnSpawn;
-		[SerializeField] private UnityEvent<int> OnClearLines;
 		
 		private readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
-		private BrickSpawner _brickSpawner;
-
-		/// <summary>
-		/// subscribe to rest event to add brick to grid
-		/// </summary>
-		private void OnEnable() {
-			BrickController.NotifyRest += HandleRest;
-			_brickSpawner = brickSpawnerObject.GetComponent<BrickSpawner>();
-			_brickSpawner.SpawnBrick(this);
-			OnSpawn.Invoke(_brickSpawner.Next);
-		}
-
-		/// <summary>
-		/// avoid errant event calls after this playfield's corresponding game object is disabled or destroyed
-		/// </summary>
-		private void OnDisable() {
-			BrickController.NotifyRest -= HandleRest;
-		}
 
 		/// <summary>
 		/// check whether given vector is inside the playable area
@@ -62,29 +38,11 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// record final position of brick in game grid, check for completed lines, and spawn a new brick
-		/// 
-		/// </summary>
-		/// <param name="brick">brick to store in grid</param>
-		private void HandleRest(Transform brick) {
-			if (AddToGrid(brick)) {
-				int lines = ClearLines();
-				if (lines > 0) {
-					OnClearLines.Invoke(lines);
-				}
-				_brickSpawner.SpawnBrick(this);
-				OnSpawn.Invoke(_brickSpawner.Next);
-			} else {
-				OnFieldFull?.Invoke();
-			}
-		}
-
-		/// <summary>
 		/// record final position of brick in game grid if in valid position
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
 		/// <returns>brick was in a valid position and added to the grid</returns>
-		private bool AddToGrid(Transform brick) {
+		public bool AddToGrid(Transform brick) {
 			foreach (Transform block in brick) {
 				Vector2Int rounded = block.position.ToVector2Int();
 				if (rounded.y >= HEIGHT) {
@@ -101,7 +59,7 @@ namespace Bricks {
 		/// clear all completed lines from playing field
 		/// </summary>
 		/// <returns>number of cleared lines</returns>
-		private int ClearLines() {
+		public int ClearLines() {
 			int lines = 0;
 			var bricks = new Dictionary<GameObject, int>();
 

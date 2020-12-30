@@ -7,6 +7,9 @@ namespace Bricks {
 	/// central location for handling player inputs to dispatch appropriate
 	/// </summary>
 	public class PlayerInputHandler : MonoBehaviour {
+		private const string PLAYER_MAP = "Player";
+		private const string HOME_MAP = "Home";
+
 		private enum InputType {
 			//brick actions
 			Move,
@@ -16,7 +19,10 @@ namespace Bricks {
 
 			//game actions
 			Pause,
-			Confirm
+			Confirm,
+			
+			//set level on home screen
+			ChangeStartLevel
 		}
 
 		/// <summary>
@@ -58,6 +64,13 @@ namespace Bricks {
 		internal static event ConfirmAction NotifyConfirm;
 
 		/// <summary>
+		/// event to set starting level
+		/// </summary>
+		/// <param name="direction">change direction: positive increases level, negative decreases</param>
+		internal delegate void ChangeStartLevelAction(float direction);
+		internal static event ChangeStartLevelAction NotifyChangeStartLevel;
+
+		/// <summary>
 		/// indicate whether bricks can currently be controlled by the player
 		/// </summary>
 		public bool CanControlBrick { get; set; } = true;
@@ -67,18 +80,34 @@ namespace Bricks {
 		/// </summary>
 		public bool GameActive { get; set; } = true;
 
+		private bool _isHome;
+		/// <summary>
+		/// indicate whether game is currently on home screen (false indicates in-game)
+		/// switch action map accordingly
+		/// </summary>
+		public bool IsHome {
+			get => _isHome;
+			set {
+				_isHome = value;
+				_playerInput?.SwitchCurrentActionMap(value ? HOME_MAP : PLAYER_MAP);
+			}
+		}
+
+		private PlayerInput _playerInput;
+
 		/// <summary>
 		/// subscribe to input events
 		/// </summary>
 		private void OnEnable() {
-			GetComponent<PlayerInput>().onActionTriggered += HandleInput;
+			_playerInput = GetComponent<PlayerInput>();
+			_playerInput.onActionTriggered += HandleInput;
 		}
 
 		/// <summary>
 		/// unsubscribe from input events
 		/// </summary>
 		private void OnDisable() {
-			GetComponent<PlayerInput>().onActionTriggered -= HandleInput;
+			_playerInput.onActionTriggered -= HandleInput;
 		}
 
 		/// <summary>
@@ -114,8 +143,14 @@ namespace Bricks {
 					case InputType.Confirm:
 						NotifyConfirm?.Invoke();
 						break;
+
+					//set level (home screen only)
+					case InputType.ChangeStartLevel:
+						NotifyChangeStartLevel?.Invoke(context.ReadValue<float>());
+						break;
 				}
 			} else if (phase == InputActionPhase.Started || phase == InputActionPhase.Canceled) {
+				//move and drop can be held down to repeat action
 				if (inputType == InputType.Move && CanControlBrick) {
 					var direction = context.ReadValue<float>();
 					NotifyMove?.Invoke(phase == InputActionPhase.Started ? direction : 0);

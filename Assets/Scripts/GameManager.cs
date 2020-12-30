@@ -1,6 +1,5 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 namespace Bricks {
@@ -13,14 +12,18 @@ namespace Bricks {
 			MAX_LINES = 10;
 		private const float LEVEL_BONUS = .5f;
 
-		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText, finalScoreText;
+		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText, finalScoreText, startLevelText;
+		[SerializeField] private GameObject playfield;
 		[SerializeField] private GameObject inputHandler;
 		[SerializeField] private GameObject nextBrick;
-		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel;
+		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel, homeScreen;
+		[SerializeField] private GameObject brickSpawner;
 
-		private bool _gameOver;
 		private int _score, _lines;
 		private PlayerInputHandler _playerInputHandler;
+		private BrickSpawner _brickSpawner;
+		private Playfield _playfield;
+		private bool _isHome = true;
 		
 		/// <summary>
 		/// event to fire when level is increased
@@ -38,6 +41,7 @@ namespace Bricks {
 			set {
 				_level = value;
 				NotifyLevel?.Invoke(value);
+				levelText.text = value.ToString();
 			}
 		}
 
@@ -61,6 +65,7 @@ namespace Bricks {
 		private void Start() {
 			Time.timeScale = 1;
 			_playerInputHandler = inputHandler.GetComponent<PlayerInputHandler>();
+			_playfield = playfield.GetComponent<Playfield>();
 			scoreText.text = _score.ToString();
 			linesText.text = _lines.ToString();
 			levelText.text = Level.ToString();
@@ -73,6 +78,8 @@ namespace Bricks {
 		private void OnEnable() {
 			PlayerInputHandler.NotifyPause += Pause;
 			PlayerInputHandler.NotifyConfirm += Confirm;
+			PlayerInputHandler.NotifyChangeStartLevel += ChangeStartLevel;
+			BrickController.NotifyRest += HandleRest;
 		}
 
 		/// <summary>
@@ -81,6 +88,8 @@ namespace Bricks {
 		private void OnDisable() {
 			PlayerInputHandler.NotifyPause -= Pause;
 			PlayerInputHandler.NotifyConfirm -= Confirm;
+			PlayerInputHandler.NotifyChangeStartLevel -= ChangeStartLevel;
+			BrickController.NotifyRest -= HandleRest;
 		}
 
 		/// <summary>
@@ -102,12 +111,62 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// confirm reset after end of game or from pause menu
+		/// confirm game start or reset
 		/// </summary>
 		private void Confirm() {
-			if (IsSuspended) {
+			if (_isHome) {
+				//start game
+				homeScreen.SetActive(false);
+				_isHome = false;
+				_playerInputHandler.IsHome = false;
+				playfield.SetActive(true);
+				brickSpawner.SetActive(true);
+				_brickSpawner = brickSpawner.GetComponent<BrickSpawner>();
+				NotifyLevel?.Invoke(Level); 
+				SpawnNext();
+			} else if (IsSuspended) {
+				//reset game
 				SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 			}
+		}
+
+		/// <summary>
+		/// increase or decrease the game's starting level
+		/// </summary>
+		/// <param name="direction">positive: increment level; negative: decrement level</param>
+		private void ChangeStartLevel(float direction) {
+			if (direction > 0) {
+				Level++;
+			} else if (direction < 0) {
+				Level--;
+			}
+
+			startLevelText.text = Level.ToString();
+		}
+
+		/// <summary>
+		/// record final position of brick in game grid, check for completed lines, and spawn a new brick
+		/// 
+		/// </summary>
+		/// <param name="brick">brick to store in grid</param>
+		private void HandleRest(Transform brick) {
+			if (_playfield.AddToGrid(brick)) {
+				int lines = _playfield.ClearLines();
+				if (lines > 0) {
+					UpdateScore(lines);
+				}
+				SpawnNext();
+			} else {
+				GameOver();
+			}
+		}
+
+		/// <summary>
+		/// spawn another brick into the playfield
+		/// </summary>
+		private void SpawnNext() {
+			_brickSpawner.SpawnBrick(_playfield);
+			UpdateNext(_brickSpawner.Next);
 		}
 
 		/// <summary>
@@ -131,7 +190,6 @@ namespace Bricks {
 				endDiv = _lines / MAX_LINES;
 			if (endDiv > startDiv) {
 				Level += endDiv - startDiv;
-				levelText.text = Level.ToString();
 			}
 		}
 
