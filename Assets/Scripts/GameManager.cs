@@ -162,7 +162,7 @@ namespace Bricks {
 		/// increase level at fixed interval of lines
 		/// </summary>
 		/// <param name="lines">number of lines cleared</param>
-		public void UpdateScore(int lines) {
+		internal void UpdateScore(int lines) {
 			//score is SCORE * BASE^(n-1) * (1 + (level - 1) * BONUS)
 			_score += Mathf.RoundToInt(LINE_SCORE * Mathf.Pow(MULTI_LINE_BASE, lines - 1)
 				* (1 + (Level - 1) * LEVEL_BONUS));
@@ -185,7 +185,7 @@ namespace Bricks {
 		/// display the next brick scheduled to be spawned
 		/// </summary>
 		/// <param name="brick">next brick</param>
-		public void UpdateNext(GameObject brick) {
+		internal void UpdateNext(GameObject brick) {
 			//clear previous entry
 			Transform transform = nextBrick.transform;
 			for (int i = 0; i < transform.childCount; i++) {

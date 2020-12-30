@@ -10,12 +10,12 @@ namespace Bricks {
 		/// <summary>
 		/// next brick to spawn
 		/// </summary>
-		public GameObject Next { get; private set; }
+		internal GameObject Next { get; private set; }
 
 		/// <summary>
 		/// current game level (affects brick drop speed)
 		/// </summary>
-		public int Level { get; set; }
+		internal int Level { get; set; }
 
 		/// <summary>
 		/// queue up a brick to start the game and subscribe to level changes (impacting brick speed)
@@ -34,7 +34,7 @@ namespace Bricks {
 		/// <summary>
 		/// create a new brick at the spawn point
 		/// </summary>
-		public void SpawnBrick() {
+		internal void SpawnBrick() {
 			BrickController controller = Instantiate(Next, transform.position, Quaternion.identity)
 				.GetComponent<BrickController>();
 			controller.Level = Level;

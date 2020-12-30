@@ -41,7 +41,7 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
 		/// <returns>brick was in a valid position and added to the grid</returns>
-		public static bool AddToGrid(Transform brick) {
+		internal static bool AddToGrid(Transform brick) {
 			foreach (Transform block in brick) {
 				Vector2Int rounded = block.position.ToVector2Int();
 				if (rounded.y >= HEIGHT) {
@@ -58,7 +58,7 @@ namespace Bricks {
 		/// clear all completed lines from playing field
 		/// </summary>
 		/// <returns>number of cleared lines</returns>
-		public static int ClearLines() {
+		internal static int ClearLines() {
 			int lines = 0;
 			var bricks = new Dictionary<GameObject, int>();
 

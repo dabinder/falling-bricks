@@ -16,7 +16,7 @@ namespace Bricks {
 		/// <summary>
 		/// get the center of rotation point for the current brick
 		/// </summary>
-		public Vector3 RotationPoint {
+		internal Vector3 RotationPoint {
 			get => rotationPoint;
 		}
 

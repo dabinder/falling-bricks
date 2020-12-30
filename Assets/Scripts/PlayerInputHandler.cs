@@ -73,19 +73,19 @@ namespace Bricks {
 		/// <summary>
 		/// indicate whether bricks can currently be controlled by the player
 		/// </summary>
-		public bool CanControlBrick { get; set; } = true;
+		internal bool CanControlBrick { get; set; } = true;
 
 		/// <summary>
 		/// indicate whether the game is currently active and whether game-related input should be relayed
 		/// </summary>
-		public bool GameActive { get; set; } = true;
+		internal bool GameActive { get; set; } = true;
 
 		private bool _isHome;
 		/// <summary>
 		/// indicate whether game is currently on home screen (false indicates in-game)
 		/// switch action map accordingly
 		/// </summary>
-		public bool IsHome {
+		internal bool IsHome {
 			get => _isHome;
 			set {
 				_isHome = value;
@@ -114,7 +114,7 @@ namespace Bricks {
 		/// dispatch event corresponding to input type
 		/// </summary>
 		/// <param name="context">player input</param>
-		public void HandleInput(InputAction.CallbackContext context) {
+		private void HandleInput(InputAction.CallbackContext context) {
 			InputActionPhase phase = context.action.phase;
 			var inputType = (InputType) Enum.Parse(typeof(InputType), context.action.name, true);
 
