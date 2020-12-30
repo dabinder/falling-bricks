@@ -24,13 +24,6 @@ namespace Bricks {
 		private BrickSpawner _brickSpawner;
 		private Playfield _playfield;
 		private bool _isHome = true;
-		
-		/// <summary>
-		/// event to fire when level is increased
-		/// </summary>
-		/// <param name="level">new game level</param>
-		internal delegate void LevelAction(int level);
-		internal static event LevelAction NotifyLevel;
 
 		private int _level = 1;
 		/// <summary>
@@ -40,7 +33,7 @@ namespace Bricks {
 			get => _level;
 			set {
 				_level = value;
-				NotifyLevel?.Invoke(value);
+				if (_brickSpawner != null) _brickSpawner.Level = value;
 				levelText.text = value.ToString();
 			}
 		}
@@ -69,7 +62,6 @@ namespace Bricks {
 			scoreText.text = _score.ToString();
 			linesText.text = _lines.ToString();
 			levelText.text = Level.ToString();
-			NotifyLevel?.Invoke(Level);
 		}
 
 		/// <summary>
@@ -122,7 +114,7 @@ namespace Bricks {
 				playfield.SetActive(true);
 				brickSpawner.SetActive(true);
 				_brickSpawner = brickSpawner.GetComponent<BrickSpawner>();
-				NotifyLevel?.Invoke(Level); 
+				_brickSpawner.Level = Level;
 				SpawnNext();
 			} else if (IsSuspended) {
 				//reset game
