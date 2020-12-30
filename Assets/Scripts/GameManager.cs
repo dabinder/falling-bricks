@@ -137,7 +137,7 @@ namespace Bricks {
 		private void ChangeStartLevel(float direction) {
 			if (direction > 0) {
 				Level++;
-			} else if (direction < 0) {
+			} else if (direction < 0 && Level > 1) {
 				Level--;
 			}
 
