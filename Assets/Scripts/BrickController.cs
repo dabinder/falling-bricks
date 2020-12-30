@@ -25,11 +25,6 @@ namespace Bricks {
 		private Vector3 _moveDirection;
 		private bool _isDropping;
 
-		/// <summary>
-		/// playfield where this brick is loaded
-		/// </summary>
-		internal Playfield Playfield { get; set; }
-
 		private int _level;
 		/// <summary>
 		/// decrease the drop time by a fixed percentage for each level after the first

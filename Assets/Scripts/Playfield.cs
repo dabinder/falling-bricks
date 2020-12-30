@@ -5,10 +5,10 @@ namespace Bricks {
 	/// <summary>
 	/// helper methods to manage the playing field
 	/// </summary>
-	public class Playfield : MonoBehaviour {
+	internal static class Playfield {
 		private const int WIDTH = 10, HEIGHT = 20;
 		
-		private readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
+		private static readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
 
 		/// <summary>
 		/// check whether given vector is inside the playable area
@@ -30,7 +30,7 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="position">vector to lookup</param>
 		/// <returns></returns>
-		internal bool IsOccupied(Vector2 position) {
+		internal static bool IsOccupied(Vector2 position) {
 			Vector2Int rounded = position.ToVector2Int();
 			return rounded.y < HEIGHT &&
 				_grid[rounded.x, rounded.y] != null;
@@ -41,7 +41,7 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
 		/// <returns>brick was in a valid position and added to the grid</returns>
-		public bool AddToGrid(Transform brick) {
+		public static bool AddToGrid(Transform brick) {
 			foreach (Transform block in brick) {
 				Vector2Int rounded = block.position.ToVector2Int();
 				if (rounded.y >= HEIGHT) {
@@ -58,7 +58,7 @@ namespace Bricks {
 		/// clear all completed lines from playing field
 		/// </summary>
 		/// <returns>number of cleared lines</returns>
-		public int ClearLines() {
+		public static int ClearLines() {
 			int lines = 0;
 			var bricks = new Dictionary<GameObject, int>();
 
@@ -80,7 +80,7 @@ namespace Bricks {
 			//destroy any empty bricks
 			foreach (GameObject brick in bricks.Keys) {
 				if (brick.transform.childCount - bricks[brick] <= 0) {
-					Destroy(brick);
+					Object.Destroy(brick);
 				}
 			}
 
@@ -92,7 +92,7 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="y">row number to check</param>
 		/// <returns>row contains a complete line</returns>
-		private bool IsLine(int y) {
+		private static bool IsLine(int y) {
 			for (int x = 0; x < WIDTH; x++) {
 				if (_grid[x, y] == null) {
 					return false;
@@ -106,11 +106,11 @@ namespace Bricks {
 		/// delete all blocks in specified row
 		/// </summary>
 		/// <param name="y">row to clear</param>
-		private void ClearLine(int y, ref Dictionary<GameObject, int> bricks) {
+		private static void ClearLine(int y, ref Dictionary<GameObject, int> bricks) {
 			for (int x = 0; x < WIDTH; x++) {
 				GameObject block = _grid[x, y].gameObject,
 					brick = block.transform.parent.gameObject;
-				Destroy(block);
+				Object.Destroy(block);
 				_grid[x, y] = null;
 
 				if (bricks.ContainsKey(brick)) {
@@ -125,7 +125,7 @@ namespace Bricks {
 		/// drop all blocks in specified row by one
 		/// </summary>
 		/// <param name="y">row to drop</param>
-		private void DropRow(int y) {
+		private static void DropRow(int y) {
 			for (int x = 0; x < WIDTH; x++) {
 				if (_grid[x, y] != null) {
 					//move stored row

@@ -34,10 +34,9 @@ namespace Bricks {
 		/// <summary>
 		/// create a new brick at the spawn point
 		/// </summary>
-		public void SpawnBrick(Playfield playfield) {
+		public void SpawnBrick() {
 			BrickController controller = Instantiate(Next, transform.position, Quaternion.identity)
 				.GetComponent<BrickController>();
-			controller.Playfield = playfield;
 			controller.Level = Level;
 			controller.enabled = true;
 			UpdateNext();

@@ -13,7 +13,6 @@ namespace Bricks {
 		private const float LEVEL_BONUS = .5f;
 
 		[SerializeField] private TextMeshProUGUI scoreText, linesText, levelText, finalScoreText, startLevelText;
-		[SerializeField] private GameObject playfield;
 		[SerializeField] private GameObject inputHandler;
 		[SerializeField] private GameObject nextBrick;
 		[SerializeField] private GameObject suspendPanel, losePanel, pausePanel, homeScreen;
@@ -22,7 +21,6 @@ namespace Bricks {
 		private int _score, _lines;
 		private PlayerInputHandler _playerInputHandler;
 		private BrickSpawner _brickSpawner;
-		private Playfield _playfield;
 		private bool _isHome = true;
 
 		private int _level = 1;
@@ -58,7 +56,6 @@ namespace Bricks {
 		private void Start() {
 			Time.timeScale = 1;
 			_playerInputHandler = inputHandler.GetComponent<PlayerInputHandler>();
-			_playfield = playfield.GetComponent<Playfield>();
 			scoreText.text = _score.ToString();
 			linesText.text = _lines.ToString();
 			levelText.text = Level.ToString();
@@ -111,7 +108,6 @@ namespace Bricks {
 				homeScreen.SetActive(false);
 				_isHome = false;
 				_playerInputHandler.IsHome = false;
-				playfield.SetActive(true);
 				brickSpawner.SetActive(true);
 				_brickSpawner = brickSpawner.GetComponent<BrickSpawner>();
 				_brickSpawner.Level = Level;
@@ -142,8 +138,8 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="brick">brick to store in grid</param>
 		private void HandleRest(Transform brick) {
-			if (_playfield.AddToGrid(brick)) {
-				int lines = _playfield.ClearLines();
+			if (Playfield.AddToGrid(brick)) {
+				int lines = Playfield.ClearLines();
 				if (lines > 0) {
 					UpdateScore(lines);
 				}
@@ -157,7 +153,7 @@ namespace Bricks {
 		/// spawn another brick into the playfield
 		/// </summary>
 		private void SpawnNext() {
-			_brickSpawner.SpawnBrick(_playfield);
+			_brickSpawner.SpawnBrick();
 			UpdateNext(_brickSpawner.Next);
 		}
 
