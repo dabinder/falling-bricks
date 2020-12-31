@@ -78,7 +78,7 @@ namespace Bricks {
 		/// <summary>
 		/// indicate whether the game is currently active and whether game-related input should be relayed
 		/// </summary>
-		internal bool GameActive { get; set; } = true;
+		internal bool IsGameActive { get; set; } = true;
 
 		private bool _isHome;
 		/// <summary>
@@ -135,7 +135,7 @@ namespace Bricks {
 
 					//game controls
 					case InputType.Pause:
-						if (GameActive) {
+						if (IsGameActive) {
 							NotifyPause?.Invoke();
 						}
 						break;

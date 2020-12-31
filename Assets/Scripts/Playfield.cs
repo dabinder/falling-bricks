@@ -11,6 +11,13 @@ namespace Bricks {
 		private static readonly Transform[,] _grid = new Transform[WIDTH, HEIGHT];
 
 		/// <summary>
+		/// clear contents of grid on starting new game
+		/// </summary>
+		internal static void Reset() {
+			System.Array.Clear(_grid, 0, _grid.Length);
+		}
+
+		/// <summary>
 		/// check whether given vector is inside the playable area
 		/// allow vectors above field in case of newly spawned piece
 		/// </summary>

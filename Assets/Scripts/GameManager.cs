@@ -20,8 +20,20 @@ namespace Bricks {
 
 		private int _score, _lines;
 		private PlayerInputHandler _playerInputHandler;
-		private BrickSpawner _brickSpawner;
+		private BrickSpawner _brickSpawnerScript;
+
 		private bool _isHome = true;
+		/// <summary>
+		/// indicate whether game is currently on the home screen (false indicates active play)
+		/// </summary>
+		private bool IsHome {
+			get => _isHome;
+			set {
+				_isHome = value;
+				homeScreen.SetActive(value);
+				_playerInputHandler.IsHome = value;
+			}
+		}
 
 		private int _level = 1;
 		/// <summary>
@@ -31,7 +43,7 @@ namespace Bricks {
 			get => _level;
 			set {
 				_level = value;
-				if (_brickSpawner != null) _brickSpawner.Level = value;
+				if (_brickSpawnerScript != null) _brickSpawnerScript.Level = value;
 				levelText.text = value.ToString();
 			}
 		}
@@ -82,16 +94,6 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// end game with a game over notification
-		/// </summary>
-		private void GameOver() {
-			IsSuspended = true;
-			losePanel.SetActive(true);
-			_playerInputHandler.GameActive = false;
-			finalScoreText.text = $"Final Score: {_score}";
-		}
-
-		/// <summary>
 		/// handle pause button press
 		/// </summary>
 		private void Pause() {
@@ -103,14 +105,13 @@ namespace Bricks {
 		/// confirm game start or reset
 		/// </summary>
 		private void Confirm() {
-			if (_isHome) {
+			if (IsHome) {
 				//start game
-				homeScreen.SetActive(false);
-				_isHome = false;
-				_playerInputHandler.IsHome = false;
+				IsHome = false;
+				Playfield.Reset();
 				brickSpawner.SetActive(true);
-				_brickSpawner = brickSpawner.GetComponent<BrickSpawner>();
-				_brickSpawner.Level = Level;
+				_brickSpawnerScript = brickSpawner.GetComponent<BrickSpawner>();
+				_brickSpawnerScript.Level = Level;
 				SpawnNext();
 			} else if (IsSuspended) {
 				//reset game
@@ -153,8 +154,8 @@ namespace Bricks {
 		/// spawn another brick into the playfield
 		/// </summary>
 		private void SpawnNext() {
-			_brickSpawner.SpawnBrick();
-			UpdateNext(_brickSpawner.Next);
+			_brickSpawnerScript.SpawnBrick();
+			UpdateNext(_brickSpawnerScript.Next);
 		}
 
 		/// <summary>
@@ -163,7 +164,8 @@ namespace Bricks {
 		/// </summary>
 		/// <param name="lines">number of lines cleared</param>
 		internal void UpdateScore(int lines) {
-			//score is SCORE * BASE^(n-1) * (1 + (level - 1) * BONUS)
+			//score is LINE_SCORE * MULTI_LINE_BASE^(n-1) * (1 + (level - 1) * LEVEL_BONUS)
+			//so 1-2-3-4 lines increases by a power of 3, and each successive level increases the score by 50%
 			_score += Mathf.RoundToInt(LINE_SCORE * Mathf.Pow(MULTI_LINE_BASE, lines - 1)
 				* (1 + (Level - 1) * LEVEL_BONUS));
 			scoreText.text = _score.ToString();
@@ -199,6 +201,16 @@ namespace Bricks {
 			brickObject.transform.parent = transform;
 			Vector3 rotationPoint = controller.RotationPoint;
 			brickObject.transform.position = nextPosition - rotationPoint;
+		}
+
+		/// <summary>
+		/// end game with a game over notification
+		/// </summary>
+		private void GameOver() {
+			IsSuspended = true;
+			losePanel.SetActive(true);
+			_playerInputHandler.IsGameActive = false;
+			finalScoreText.text = $"Final Score: {_score}";
 		}
 	}
 }
