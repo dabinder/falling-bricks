@@ -27,7 +27,6 @@ namespace Bricks {
 		/// <summary>
 		/// queue up a brick at random
 		/// </summary>
-		/// <returns>next brick to spawn</returns>
 		private void UpdateNext() =>
 			Next = bricks[Random.Range(0, bricks.Length)];
 

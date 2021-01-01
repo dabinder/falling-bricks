@@ -66,8 +66,8 @@ namespace Bricks {
 		/// grab reference to playing field
 		/// </summary>
 		private void Start() {
-			Time.timeScale = 1;
 			_playerInputHandler = inputHandler.GetComponent<PlayerInputHandler>();
+			IsSuspended = false;
 			scoreText.text = _score.ToString();
 			linesText.text = _lines.ToString();
 			levelText.text = Level.ToString();
@@ -189,18 +189,16 @@ namespace Bricks {
 		/// <param name="brick">next brick</param>
 		internal void UpdateNext(GameObject brick) {
 			//clear previous entry
-			Transform transform = nextBrick.transform;
-			for (int i = 0; i < transform.childCount; i++) {
-				Destroy(transform.GetChild(i).gameObject);
+			Transform nextTransform = nextBrick.transform;
+			for (int i = 0; i < nextTransform.childCount; i++) {
+				Destroy(nextTransform.GetChild(i).gameObject);
 			}
 
 			//add next
-			Vector3 nextPosition = transform.position;
 			GameObject brickObject = Instantiate(brick, Vector3.zero, Quaternion.identity);
 			BrickController controller = brickObject.GetComponent<BrickController>();
-			brickObject.transform.parent = transform;
-			Vector3 rotationPoint = controller.RotationPoint;
-			brickObject.transform.position = nextPosition - rotationPoint;
+			brickObject.transform.parent = nextTransform;
+			brickObject.transform.position = nextTransform.position - controller.RotationPoint;
 		}
 
 		/// <summary>

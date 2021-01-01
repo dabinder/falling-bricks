@@ -36,7 +36,7 @@ namespace Bricks {
 		/// since this will occur when a piece is first spawned
 		/// </summary>
 		/// <param name="position">vector to lookup</param>
-		/// <returns></returns>
+		/// <returns>grid position is occupied by a block</returns>
 		internal static bool IsOccupied(Vector2 position) {
 			Vector2Int rounded = position.ToVector2Int();
 			return rounded.y < HEIGHT &&
@@ -84,7 +84,7 @@ namespace Bricks {
 				}
 			}
 
-			//destroy any empty bricks
+			//destroy any empty bricks; childCount isn't updated until end of frame, so need to calculate difference
 			foreach (GameObject brick in bricks.Keys) {
 				if (brick.transform.childCount - bricks[brick] <= 0) {
 					Object.Destroy(brick);
