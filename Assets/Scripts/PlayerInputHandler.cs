@@ -26,49 +26,59 @@ namespace Bricks {
 		}
 
 		/// <summary>
-		/// event to handle left/right movement
+		/// handle input with a positive/negative/zero flag
 		/// </summary>
-		/// <param name="direction">movement direction: positive indicates right, negative left</param>
-		internal delegate void MoveAction(float direction);
-		internal static event MoveAction NotifyMove;
+		/// <param name="indicator">indicates positive, negative, or a zero input value</param>
+		internal delegate void PosNegAction(float indicator);
+
+		/// <summary>
+		/// handle input intended to be performed continuously until instructed to stop
+		/// </summary>
+		/// <param name="start">true starts input action; false ends it</param>
+		internal delegate void ContinuousAction(bool start);
+
+		/// <summary>
+		/// handle input intended to be performed once per button press
+		/// </summary>
+		internal delegate void SingularAction();
+
+		/// <summary>
+		/// event to handle left/right movement
+		/// negative is left, positive right
+		/// </summary>
+		internal static event PosNegAction NotifyMove;
 
 		/// <summary>
 		/// event to handle brick rotation
 		/// </summary>
-		internal delegate void RotateAction();
-		internal static event RotateAction NotifyRotate;
+		internal static event SingularAction NotifyRotate;
 
 		/// <summary>
 		/// event to handle brick drops
+		/// true indicates drop is starting; false stopping
 		/// </summary>
-		/// <param name="start">true indicates action is starting; false stopping</param>
-		internal delegate void DropAction(bool start);
-		internal static event DropAction NotifyDrop;
+		internal static event ContinuousAction NotifyDrop;
 
 		/// <summary>
 		/// event to handle instant brick drop to bottom of playing field
 		/// </summary>
-		internal delegate void HardDropAction();
-		internal static event HardDropAction NotifyHardDrop;
+		internal static event SingularAction NotifyHardDrop;
 
 		/// <summary>
 		/// event to handle pause button press
 		/// </summary>
-		internal delegate void PauseAction();
-		internal static event PauseAction NotifyPause;
+		internal static event SingularAction NotifyPause;
 
 		/// <summary>
 		/// event to handle confirm button press
 		/// </summary>
-		internal delegate void ConfirmAction();
-		internal static event ConfirmAction NotifyConfirm;
+		internal static event SingularAction NotifyConfirm;
 
 		/// <summary>
 		/// event to set starting level
+		/// positive increments level, negative decrements
 		/// </summary>
-		/// <param name="direction">change direction: positive increases level, negative decreases</param>
-		internal delegate void ChangeStartLevelAction(float direction);
-		internal static event ChangeStartLevelAction NotifyChangeStartLevel;
+		internal static event PosNegAction NotifyChangeStartLevel;
 
 		/// <summary>
 		/// indicate whether bricks can currently be controlled by the player
