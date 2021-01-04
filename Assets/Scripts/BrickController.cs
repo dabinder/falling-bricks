@@ -20,11 +20,6 @@ namespace Bricks {
 			get => rotationPoint;
 		}
 
-		private float _previousDrop, _previousMove;
-		private float _dropTime = BASE_DROP_TIME;
-		private Vector3 _moveDirection;
-		private bool _isDropping;
-
 		private int _level;
 		/// <summary>
 		/// decrease the drop time by a fixed percentage for each level after the first
@@ -42,6 +37,11 @@ namespace Bricks {
 		/// </summary>
 		internal delegate void RestAction(Transform sender);
 		internal static event RestAction NotifyRest;
+
+		private float _previousDrop, _previousMove;
+		private float _dropTime = BASE_DROP_TIME;
+		private Vector3Int _moveDirection;
+		private bool _isDropping;
 
 		/// <summary>
 		/// subscribe to input events
@@ -90,11 +90,11 @@ namespace Bricks {
 		private void Move(float direction) {
 			if (enabled) {
 				if (direction > 0) { //move right
-					_moveDirection = new Vector3(1, 0, 0);
+					_moveDirection = new Vector3Int(1, 0, 0);
 				} else if (direction < 0) { //move left
-					_moveDirection = new Vector3(-1, 0, 0);
+					_moveDirection = new Vector3Int(-1, 0, 0);
 				} else { //stop moving
-					_moveDirection = new Vector3(0, 0, 0);
+					_moveDirection = new Vector3Int(0, 0, 0);
 				}
 
 				//perform initial move immediately
@@ -150,7 +150,7 @@ namespace Bricks {
 		/// </summary>
 		private void DropPiece() {
 			if (enabled) {
-				Vector3 move = new Vector3(0, -1, 0);
+				Vector3Int move = new Vector3Int(0, -1, 0);
 				transform.position += move;
 				if (!IsValidMove()) {
 					transform.position -= move;
